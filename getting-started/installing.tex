@@ -1,0 +1,116 @@
+% vim: set textwidth=72 :
+\documentclass{article}
+\usepackage{amssymb,latexsym,amsmath}
+\let\code\texttt % in line source code
+
+\begin{document}
+\title{Installing Torch}
+\author{Roy E Lowrance}
+\maketitle
+
+\abstract{XXX}
+
+\section{Problem}
+You want to install torch version 7.
+
+\section{Solution}
+If you are using OS X 10.8 or Ubuntu 12.04, navigate to\\
+\code{https://github.com/clementfarabet/torchinstall}, read the
+documentation on installing torch, and execute this command (which
+should be typed on one line in a terminal)\\
+\code{curl -s
+  https://raw.github.com/clementfarabet/torchinstall/master/install-torch
+| PREFIX=\textasciitilde/local bash}
+
+You should see a message that ``Torch7 has been installed
+successfully.''
+
+You now need to set your path so that torch and other local programs can
+be found. To do that, edit your \code{\textasciitilde/.bashrc} file to
+include the line\\
+\code{PATH=\textasciitilde/local/bin:\$PATH}\\
+and execute the lines in the file by entering in the terminal\\
+\code{source \textasciitilde/.bashrc}\\
+so that your terminal knows about the PATH variable.
+
+If you are using Windows, this recipe solution will not work. The
+developers of torch claim that torch itself will work under Windows but
+that some of its preferred libraries do not yet work under Windows.
+Windows users might consider installing Virtual Box and using it to
+create a Ubuntu 12.04 64-bit virtual machine. Then the above solution
+can be used to install torch into the virtual machine.
+
+\section{Discussion}
+
+To check if torch is really installed, you can execute \code{torch}
+ at your command prompt. You
+should see the torch 7 prompt \code{t7>}. Enter ``=1 +2'' and press
+ENTER. Torch should print ``3'' and give you another prompt. This time
+enter c-D (hold down the control key and press the lower case d key). If
+torch asks if it should really quit, press ``y'' and ENTER. You should
+be back at the command prompt.
+
+If you can't get torch to start using the \code{torch} command, trying
+entering the command \code{\textasciitilde/local/bin/torch}. It should
+work as described above. If it works and \code{torch} by itself does
+not, something has gone wrong with your \code{PATH} variable. Check the
+changes you made to your \code{\textasciitilde/.bashrc} file.
+
+
+The recommended solution is to install torch locally using Clement
+Farabet's one-line installer. It works only on OS X and
+Ubunutu. At the time this article was written, it had been tested on OS
+X 10.8 and Ubuntu 12.04. It may work on other releases of these and
+similar operating systems.
+
+If you want to install torch on servers where you do not have root
+access, you will need to install torch locally. Here ``locally'' means
+that the torch instance will be local to one account. Not having root
+access is a common use case so the above recipe suggests always
+installing torch locally, so that your torch installation is always in
+the same place if you are running on your own system or a server.
+
+Where should you install torch locally? Any directory in your home
+directory will work. We recommen installing torch in a common place. The
+``Filesystem Hierarchy Standard (FHS)'' (see \\
+\code{en.wikipedia.org/wiki/Filesystem\_Hierarchy\_Standard} accessed
+September 12, 2013) states that programs like torch when installed
+globally (for all users) should go into sub-directories of the directory
+\code{/usr/local/}. We suggest following this practice and putting torch
+into \code{/home/ID/local/} where \code{ID} is your user id.  
+
+The solution installs torch as well as some libraries that torch can use
+and some torch packages. You may not want that. For example, you may
+have space restrictions on the device where you are installing torch. Or
+you may want to not use some of the libraries so that you can benchmark
+torch versus other technology that does not use those libraries. Or you
+may wnat to experiment with other libraries. How to
+install torch in a custom way can be found at
+\code{github.com/torch/torch7}. The ``7'' refers to the version of
+torch. There was a version 5 that is very different from the version 7.
+
+\section{See also}
+
+Other recipees of interest to new users of torch include these:
+\begin{itemize}
+  \item Reading the torch documentation
+  \item Starting up
+  \item Torch as a calculator
+  \item Numbers
+  \item Variables
+  \item Expressions
+  \item Trig functions
+  \item Elementary functions
+  \item Tensors
+  \item Reading files
+  \item Writing files
+  \item Linear algebra
+  \item Element-wise operations
+  \item Statements
+\end{itemize}
+
+
+
+\end{document}
+
+
