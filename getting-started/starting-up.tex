@@ -11,11 +11,11 @@
 \let\code\texttt % in line source code
 
 \begin{document}
-\title{Installing Torch}
+\title{Getting Started}
 \author{Roy E Lowrance}
 \maketitle
 
-\abstract{XXX}
+%\abstract{XXX}
 
 \section{Problem}
 You need to know the basic: how to start torch, stop torch, and get
@@ -23,40 +23,42 @@ help.
 
 \section{Solution}
 
-Follow the tutorial at \code{www.torch.ch/manual/tutorial/index}.
+To learn how to start and stop torch and the basics for using it, follow
+the tutorial at \code{www.torch.ch/manual/tutorial/index}.
 
 The main forum for torch7  is at 
 \code{https://groups.google.com/forum/\#!forum/torch7}. Use it to post
 questions and provide answers to others.
 
-Torch is open source and hosted at GitHub as project \code{torch7}. for
+Torch is open source and hosted at GitHub as project \code{torch7} for
 user \code{torch}. The URL is \code{https://github.com/torch/torch7}. 
 
 \section{Description}
 
 Torch is a library for Lua.
 
-\code{www.lua.com}) descibes lua as
+\code{www.lua.com} descibes lua as
 \begin{itemize}
   \item fast: faster than other scripting languages. There is a
     just-in-time compiler available that makes lua programs even faster.
+    The standard install for torch installs the just-in-time compiler.
   \item portable: Lua is written in standard C is is hence highly
     portable. You can run it on large systems and very small systems.
   \item embeddable: You can write a program in a language that can call
     C functions and embed the entire lua language into your program.
     This feature has made lua popular as a scripting engine for
-    applications.
-  \item powerful: like Python, lua provides a few facilities that allow
-    for object-oriented programming in a user-defined way
+    applications including games.
+  \item powerful: lua provides a few facilities that allow
+    for object-oriented programming in a user-defined way.
   \item small: the source code and Lua library take 243K bytes.
   \item free: distributed under the MIT license.
 \end{itemize}
 
 In addition to these attributes, lua is simpler than some other
 scripting languages. It provides one data structure, the \code{table}
-where some languages provide both lists and hash tables. It has only one
-numeric data type, the floating point double in torch's instantiation of
-lua, instead of integers, reals, and complex numbers.
+where some languages provide both lists and hash tables (dictionaries).
+It has only one numeric data type, the floating point double in torch's
+instantiation of lua, instead of integers, reals, and complex numbers.
 
 Moreover, lua has a simple syntax that is familiar to C programmers.
 
@@ -74,7 +76,8 @@ Torch extends lua:
 
 Torch might be preferred to MATLAB when speed, avoidance of software
 licensing costs, and ability to operate on small devices is a concern
-for a project. 
+for a project. If only the licensing cost is a concern, \code{octave} is
+a free implemenation of the basic components of MATLAB.
 
 Compared to MATLAB programs, torch programs can be better structured,
 thanks to careful thinking of the lua design team. However, torch
@@ -99,8 +102,9 @@ Roman Collobert,Koray Kavukcuoglu, and Clement Farabet.
   Networks: Tricks of the Trade, G. Montavon, G. Orr, and K-R Muller
 (Ed), Springer. 2012)}.
 
-Both papers may be downloaded from Collobert's website
-\code{ronan.collobert.com}--look for publications.
+Both papers may be downloaded from the publications section of 
+Collobert's website\\
+\code{ronan.collobert.com}
 
 
 
