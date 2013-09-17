@@ -1,0 +1,300 @@
+% vim: set textwidth=72 :
+% Copyright (C) 2013 Roy E Lowrance
+% See the file COPYING.txt for copying conditions.
+
+\documentclass{article}
+\usepackage{amssymb,latexsym,amsmath}
+\usepackage{upquote}
+\let\code\texttt % in line source code
+
+\begin{document}
+\title{Linux in a Box}
+\author{Roy E Lowrance}
+\maketitle
+
+%\abstract{XXX}
+
+\section{Problem}
+You want to intall Ubuntu 12.04 in a virtual machine. You may want to do
+this so that you can continue to run the operating system that came with
+your computer or so that you can install use software that supports
+Ubuntu (such as Torch).
+
+\section{Solution}
+
+\subsection{Introduction}
+
+The solution is to install VirtualBox and run Ubuntu 12.04 LTS as a
+guest inside of VirtualBox. Getting everything to work is tricky. These
+directions are meant to work, but have not been tested on all hardware
+and software combinations.
+
+\subsection{Download iso's}
+
+Download the correct VirtualBox installer for your operating system. Go
+to \code{www.virtualbox.org}, select Downloads (in the left panel), pick
+the right platform package for your operating system. If your operating
+system is recent, it is a 64-bit operating system. So pick a 64-bit
+version of VirtualBox. I used VirtualBox 4.2.18 for Linux in preparing
+this note.
+
+You should navigate to the online VirtualBox documentation on the
+VirtualBox web site and bookmark it. You will need to refer to it in
+case these direction do not work on your system. There is a lot you can
+do with VirtualBox that is not covered in this note, and the
+documentation is pretty clear once you understand the concepts.
+
+Download the iso for ubunutu 12.04.03.  Go to \code{www.ubuntu.com},
+select download \textless desktop, pick 64-bit if your operating system is not
+32 bit (your operating system is most likely 64-bit if your system is
+only a few years old), and select Ubuntu 12.04 LTS. Canonical, the
+developer of Ubuntu, promises support for this release of Ubuntu until
+April 2017. Very seldom will upgrades to operating systems make your
+life as a data scientist any better, so its better to put off OS updates
+until you are forced.
+
+\subsection{Install Virtual Box}
+
+Follow your operating system's procedure to install Virtual Box.
+
+If your OS in Ubuntu, you will need to open a terminal and execute these
+command to add your user name to the virtual box users group.
+
+\begin{verbatim}
+$ sudo groupadd vboxusers
+$ sudo usermod -aG vboxusers <your user name>
+\end{verbatim}
+
+\subsection{Create a virtual machine}
+
+A virtual machine is a simulated computer. It is called a ``guest.'' The
+guest runs on the ``host,'' the physical computer.
+
+\begin{itemize}
+  \item Start Virtual Box
+  \item Click on ``New'' in the GUI to create a new virtual machine.
+  \item Click ``Next.''
+  \item Name: Set the virtual machine name to "ubuntu-12.04.03-64-bit"; 
+  \item Memory: accept the default 512 MB
+  \item Create a Virtual Hard Disk: select ``Start-up Disk''. ``Create new hard
+  disk'', file type VDI, dynamically allocated, default location,
+  default size.
+\item Select Create.
+\item Select Create.
+\end{itemize}
+
+\subsection{Install Ubuntu on the virtual machine}
+
+Put the virtual CD ROM (the iso file) with the operating system into the virtual CD
+drive of the virtual machine you just created.
+
+\begin{itemize}
+  \item In the VirtualBox GUI, make sure the virtual machine is
+    selected.
+  \item Select the Settings icon on the top panel.
+  \item Select Storage from the left panel.
+  \item Under IDE Controller, click on Empty (the icon for the CD
+    drive).
+  \item In the right panel, click attribute Live CD/DVD.
+  \item In the right panel, click the CD icon, select choose a virtual
+    CD/DVD disk file, navigate to your Ubuntu iso file, select it, and
+    click OK.
+\end{itemize}
+
+Boot and configure Ubuntu in the guest virtual machine.
+\begin{itemize}
+\item In the VirtualBox GUI, select the virtual machine and click
+  Start. VirtualBox will start the virtual machine. You will see the
+  Ubuntu boot message. Ignore any error messages.
+\item If all goes well, you will see a panel in the virtual machine
+  giving you a choice of language. Pick English for now so that other
+  people can help you. (You can later create another virtual machine
+  in your preferred language.) Pick Install Ubuntu.
+\item Preparing to install Ubuntu. Don't select Download updates while
+  installing (unless you have a lot Internet bandwidth.) Select
+  Install third-party software. Select Continue.
+\item Installation Type. Select Erase disk and install Ubuntu. You are
+  erasing the virtual disk, not your host system disk. Continue.
+\item Erase disk and install Ubuntu. Install Now.
+\item Where are you? Select New York; Continue. This sets the time zone
+  for the virtual computer.
+\item Keyboard layout. Find you keyboard and select it. Continue.
+\item Who are you? Enter your name, pick a user name, password. Select
+  require password to log in. Do not encrypt your home folder. Continue.
+\item Watch the advertising.
+\end{itemize}
+
+When the installation is finished, you will be told to remove the installation media
+(which is the virtual CD, the iso file) and press Enter. You can remove
+the virtual CD by right-clicking on the CD icon on the bottom panel of the 
+VirtualBox GUI panel. After the guest system reboots, shut it down. The Ubuntu shutdown
+command is under the system menu in the upper right hand corner.
+
+\subsection{Hint on keyboard and mouse capture}
+
+VirtualBox tried to figuure out whether mouse movement and clicks and
+keyboard keystrokes should be sent to the host or to the guest.
+Sometimes it gets confused and the input focus gets stuck in
+the guest. When that happens, you need to tell the guest
+to release input focus. Look at the VirtualBox GUI. The lower
+right hand corner is the key combination that releases focus from the
+virtual machine.
+
+\subsection{Configure the virtual machine}
+
+Shut down the virtual machine if you have not already done so.
+
+You are in the VirtualBox GUI. Select the Ubuntu virtual machine and click settings.
+On the System tab, set the Base Memory to something higher than the default. I set it to the 
+max that is in the green area. That's because I tend to do most of my
+work in the guest OS, not the host OS, so I want the guest to have as
+much memory as possible. If you use your host system a lot, you will
+want to make your guest smaller than your host. Note that you can change
+this setting easily as your usage of your system changes.
+
+In the Shared Folders tab, add a shared folder that is your home
+directory in the host system. Choose full access and auto-mount.
+
+Restart the guest system. Log in.
+
+Install the dkms file system in Ubuntu. Open a terminal and type
+\code{sudo apt-get install dkms}.
+
+In the VirtualBox menu, select Devices \textgreater Install Guest
+Additions. Click Run when asked if you trust the software. When the
+installation finished, press Return as instructed.
+
+Resize the window holding the display for the guest. The Ubuntu display
+should resize to fit the window. In the VirtualBox menus, pick View > Full Screen.
+Read the message and memorize the Host key. Then click Switch.
+
+Mouse down to the bottom of the screen. You should see a tiny strip.
+THat's a menu bar that will pop up. Exit full-screen mode by picking the
+multiple-window icon.
+
+\subsection{Configure and install Ubuntu software}
+
+Your vitual machine should be running Ubuntu.
+
+Install synaptic, a software package manager. Click on the icon for the
+Ubuntu software center in the left strip. Search for ``synaptic'' and
+select ``Synaptic Package Manager.'' Install it. Once it installs, exit
+the Ubuntu Sofware Center.
+
+Start synpatic by searching for it using the dash home. Use the Quick
+Filter to find emacs and mark it for installation. Likewise,
+vim. Choose Apply (under the check mark) to install all the software you
+picked. Synaptic will download the software and install it. Later, if
+the software gets updated, Synaptic will prompt you to install the
+updates.
+
+In the guest, select folder icon in the strip on the left. You should
+see your home folder. Check the devices section of the panel. If it has
+a CD-ROM containing the Virtual Box Additions, click on the eject icon
+to its right.
+
+Now let's find the home folder in the host system. Reopen the file
+browser. Click on file system. Select the media folder. In it, you
+should see a folder whose name begins with ``fs\_''. This is your home
+folder in the host. It is visible in the guest. Double click on this
+folder to open it. If you don't have permission, you need to add your
+userid to the group ``vboxsf''. Do this by opening a terminal and
+executing
+
+\begin{verbatim}
+$ sudo groupadd vboxsf
+$ sudo usermod -aG vboxsf <your user name>
+\end{verbatim}
+
+Log out and log back in. Now try to access the shared folder. This time,
+once you display your home directory in the host, move your mouse to the
+top line of the Ubuntu screen. This causes the menus to be displayed.
+Select Add bookmark.
+
+You should update the operating system
+software. Go to the system menu, select Updates available and follow the
+prompts. At the end of the update, you will need to reboot. Do so, then
+shut down the guest.
+
+
+
+\section{Discussion}
+
+\subsection{Sofware selections}
+
+VirtualBox is specified as the virtual machine manager because it is
+free and runs on Linux, OS X, and Windows. Other virtual managers can be
+used. Search for virtualbox alternatives.
+
+I have found VirtualBox to be difficult to work with. It does not always behave
+consistently. Sometimes to get it to work, I have to restart VirtualBox and sometimes I
+have to restart my system. Once I misconfigured VirtualBox and its
+locked up my Windows 7 system. If the GUI freezes, try not moving input
+focus away from the virtual machine's window.
+
+The version of linux recommended is Ubuntu 12.04 because it is popular
+and torch is tested on it. Because it is popular, there is a lot of
+software that is preconfigured for it and a lot of help available on the
+Internet and from colleagues. 
+
+Emacs and vim are suggested as installs because both are
+well-established free text editors that work in both a terminal and with
+a GUI. You should pick one and learn it.
+
+You now have Ubunt linux in a virtual box. You should shut it down so
+that VirtualBox saves everything.
+
+\subsection{Going further}
+
+The \code{tmux} program lets you run multiple terminal sessions inside
+on terminal. It also allows you to reconnect to a server if the
+connection is lost. A lost connection includes shutting down your
+laptop.
+
+If you have two folders of data files you need to keep in sync--say one
+on a server and one on your laptop--\code{rsync} will prove useful.
+
+If you have two folders of program code you need to keep in sync or if
+you want to be able to go back to an earlier version of a program you
+are developing or if you want to share code development with team
+members, learn about \code{git} and GitHub. 
+
+In Ubuntu, you can hide the icons on the left to gain more screen space.
+You can use the alt key or Windows key to bring up a panel where you can
+search for programs and files. You can add indicators to the top line of
+the window including one that monitors CPU usage and memory usage.
+
+In VirtualBox, you can configure a guest to use as many CPUs as are in
+the host system.
+
+
+\subsection{Configuring systems}
+
+I find it convenient to work in one operating system as much as
+possible. That operating system should be a linux variant, as linux is
+most popular on compuatation servers.
+
+I configure my systems in one of two ways. When I order a system with a
+non-linux operating system, I typicall install VirtualBox and run a
+Ubuntu guest. Sometimes I wipe out the vendor's operating system and
+install Ubuntu directly on the hardware. This is usually easier to do
+than configuring VirtualBox but does not make the original OS available.
+Usually Ubuntu supports all the hardware in the system, but sometimes
+not. For that reason, I consider buying systems from vendors that offer
+Ubuntu. These vendors typically have up-to-date desktop systems but
+their laptop systems tend to lag behind in hardware features.   
+
+\section{See also}
+
+There is a lot of documentation and tutorial on both emacs and vim on
+the Internet.
+
+Oracle's VirtualBox web site contains the definite documentation on
+VirtualBox.
+
+This recipe is free documentation. You can modify it by visiting the
+github for account ``rlowrance'' and forking the repo
+``torch-cookbook.''
+
+\end{document}
+
