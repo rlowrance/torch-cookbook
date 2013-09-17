@@ -1,9 +1,10 @@
-% vim: set textwidth=72 
+% vim: set textwidth=72 :
 % Copyright (C) 2013 Roy E Lowrance
 % See the file COPYING.txt for copying conditions.
 
 \documentclass{article}
 \usepackage{amssymb,latexsym,amsmath}
+\usepackage{upquote}
 \let\code\texttt % in line source code
 
 \begin{document}
@@ -17,24 +18,105 @@
 You want to install torch version 7.
 
 \section{Solution}
-If you are using OS X 10.8 or Ubuntu 12.04, navigate to\\
-\code{https://github.com/clementfarabet/torchinstall}, read the
-documentation on installing torch, and execute this command (which
-should be typed on one line in a terminal)\\
-\code{curl -s
-  https://raw.github.com/clementfarabet/torchinstall/master/install-torch
-| PREFIX=\textasciitilde/local bash}
 
-You should see a message that ``Torch7 has been installed
-successfully.''
+The solution depends on the operating system you are using. Choose the
+closest match, though the recipes are tested only on the specified OS
+versions.
 
-You now need to set your path so that torch and other local programs can
-be found. To do that, edit your \code{\textasciitilde/.bashrc} file to
-include the line\\
-\code{PATH=\textasciitilde/local/bin:\$PATH}\\
-and execute the lines in the file by entering in the terminal\\
-\code{source \textasciitilde/.bashrc}\\
-so that your terminal knows about the PATH variable.
+\subsection{Ubuntu 12.04}
+
+If you are using Ubuntu 12.04, open a new terminal and enter on one line
+(the line is broken up below so that it will print nicely)
+
+\begin{verbatim}
+curl -s
+  https://raw.github.com/clementfarabet/torchinstall/master/install-all | 
+  PREFIX=~ bash
+\end{verbatim}
+
+The character after \code{PREFIX=} is a tilde.
+
+If nothing happens after entering the \code{curl} command. enter it
+again without the \code{-s} option, which means silent and surpresses
+curl's messages.
+
+If you are prompted to enter your password, do so.
+
+You should see many message scroll by and eventually a message that ``Torch7 has
+been installed successfully.''
+
+You can verify that torch is installed by listing your \code{bin} directory
+
+\begin{verbatim}
+$ ls ~/bin
+\end{verbatim}
+
+You should see an executable for \code{torch} and other files as well.
+
+Print and examine the bash variable PATH.
+
+\begin{verbatim}
+$ echo path=$PATH
+\end{verbatim}
+
+If your PATH starts with \code{\textasciitilde/bin} skip down to the
+paragraph that says to open a new terminal. Otherwise, you need to 
+tell bash that your preferred programs are in your
+\code{\textasciitilde/bin} directory. Do so by entering these commands:
+
+\begin{verbatim}
+$ echo 'source ~/.bashrc' >> .bash_profile
+$ echo PATH=$HOME/bin:$PATH >> .bashrc
+$ source ~/.bash_profile
+$ which torch
+\end{verbatim}
+
+After the last line, you should see that bash will use the torch in your
+\code{\textasciitilde/bin} directory.
+
+Open a new terminal, start torch, and enter these commands:
+
+\begin{verbatim}
+$ torch
+<torch prints some stuff>
+t7> = 1 + 2 <ENTER>
+\end{verbatim}
+
+Torch should print \code{3}.
+
+Exit torch by entering c-D (hold down the control key and type the
+letter ``d'') and typing \code{y}.
+
+\subsection{OS X}
+
+\subsubsection{OS X 10.8.5}
+
+Clement, the author of the one line installer,  uses a late release of OS X and is the author of the one-line
+installer. 
+
+Unbuntu comes with a compiler and numerous command line tools already
+installed. OS X does not. The first steps are to install the missing
+sofware: a compiler and command line tools.   
+
+Apple's compiler is called Xcode. Navigate to
+\code{https://developer.apple.com/xcode/} and install  the latest
+version of Xcode 4.6. (I installed 4.6.3.). After the install of Xcode,
+run it and install any system components that it suggests.
+
+To install the command line tools, go to
+\code{develop.apple.com/downloads} and search for command line tools.
+Pick the right version for your operating system. Download the .dmg file
+and install it.
+
+Now follow the directions for Ubuntu.
+
+
+
+\subsubsection{OS X 10.6.8}
+
+The one-line installer does not work. I don't know of a work around.
+
+\subsection{Windows}
 
 If you are using Windows, this recipe solution will not work. The
 developers of torch claim that torch itself will work under Windows but
@@ -45,26 +127,11 @@ can be used to install torch into the virtual machine.
 
 \section{Discussion}
 
-To check if torch is really installed, you can execute \code{torch}
- at your command prompt. You
-should see the torch 7 prompt \code{t7>}. Enter ``=1 +2'' and press
-ENTER. Torch should print ``3'' and give you another prompt. This time
-enter c-D (hold down the control key and press the lower case d key). If
-torch asks if it should really quit, press ``y'' and ENTER. You should
-be back at the command prompt.
+The solution uses the one-line torch install from Clement Farabet. one
+of the torch developers. His GitHub site is at
+\code{https://github.com/clementfarabet/}. There you will find much
+useful torch code including his one-line install.
 
-If you can't get torch to start using the \code{torch} command, trying
-entering the command \code{\textasciitilde/local/bin/torch}. It should
-work as described above. If it works and \code{torch} by itself does
-not, something has gone wrong with your \code{PATH} variable. Check the
-changes you made to your \code{\textasciitilde/.bashrc} file.
-
-
-The recommended solution is to install torch locally using Clement
-Farabet's one-line installer. It works only on OS X and
-Ubunutu. At the time this article was written, it had been tested on OS
-X 10.8 and Ubuntu 12.04. It may work on other releases of these and
-similar operating systems.
 
 If you want to install torch on servers where you do not have root
 access, you will need to install torch locally. Here ``locally'' means
@@ -73,48 +140,38 @@ access is a common use case so the above recipe suggests always
 installing torch locally, so that your torch installation is always in
 the same place if you are running on your own system or a server.
 
-Where should you install torch locally? Any directory in your home
-directory will work. We recommen installing torch in a common place. The
-``Filesystem Hierarchy Standard (FHS)'' (see \\
-\code{en.wikipedia.org/wiki/Filesystem\_Hierarchy\_Standard} accessed
-September 12, 2013) states that programs like torch when installed
-globally (for all users) should go into sub-directories of the directory
-\code{/usr/local/}. We suggest following this practice and putting torch
-into \code{/home/ID/local/} where \code{ID} is your user id.  
+In addition to installing into \code{\textasciitilde/bin}, the one-line
+installer puts files into \code{\textasciitilde/etc},
+\code{\textasciitilde/include}, \code{\textasciitilde/lib}, and
+\code{\textasciitilde/share}. For this reason, some people prefer to
+install torch locally into \code{\textasciitilde/local} so that these
+additional directories are not modified by the install. If you like that
+choice, re-run the one-line install with
+\code{PREFIX=\textasciitilde/local} and adjust your \code{.bashrc} file.
+Don't forget to delete the torch executables in your
+\code{\textasciitilde/bin} directory.
 
 The solution installs torch as well as some libraries that torch can use
 and some torch packages. You may not want that. For example, you may
 have space restrictions on the device where you are installing torch. Or
 you may want to not use some of the libraries so that you can benchmark
 torch versus other technology that does not use those libraries. Or you
-may wnat to experiment with other libraries. How to
+may want to experiment with other libraries. How to
 install torch in a custom way can be found at
 \code{http://www.torch.ch/manual/install/index}. 
 
-The ``7'' refers to the version of
-torch. There was a version 5 that is very different from the version 7.
+The ``7'' in ``torch7'' refers to the version of
+torch. There was a version 5 that is very different from version 7.
 
+The PATH is a colon-separated list of directories where bash looks for
+an executable. The search stops in the first directory where the
+executable is found. If the executable is not in any of the directories,
+you will get an error message: \code{command not found}.
 \section{See also}
 
-Other recipees of interest to new users of torch include these:
-\begin{itemize}
-  \item Reading the torch documentation
-  \item Starting up
-  \item Torch as a calculator
-  \item Numbers
-  \item Variables
-  \item Expressions
-  \item Trig functions
-  \item Elementary functions
-  \item Tensors
-  \item Reading files
-  \item Writing files
-  \item Linear algebra
-  \item Element-wise operations
-  \item Statements
-\end{itemize}
-
-
+This recipe is free documentation. You can modify it by visiting the
+github for account ``rlowrance'' and forking the repo
+``torch-cookbook.''
 
 \end{document}
 
