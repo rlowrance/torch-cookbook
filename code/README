@@ -1,0 +1,6 @@
+The /code directory contains and data sets used in the various recipes.
+
+This is a subdirectory for each recipe, so that a recipe named GOOD has 
+its code and data in directory /code/GOOD/.
+
+
