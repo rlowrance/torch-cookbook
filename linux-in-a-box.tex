@@ -62,7 +62,7 @@ command to add your user name to the virtual box users group.
 
 \begin{verbatim}
 $ sudo groupadd vboxusers
-$ sudo usermod -aG vboxusers <your user name>
+$ sudo usermod -aG vboxusers <your user name	extgreater
 \end{verbatim}
 
 \subsection{Create a virtual machine}
@@ -76,11 +76,8 @@ guest runs on the ``host,'' the physical computer.
   \item Click ``Next.''
   \item Name: Set the virtual machine name to "ubuntu-12.04.03-64-bit"; 
   \item Memory: accept the default 512 MB
-  \item Create a Virtual Hard Disk: select ``Start-up Disk''. ``Create new hard
-  disk'', file type VDI, dynamically allocated, default location,
-  default size.
-\item Select Create.
-\item Select Create.
+  \item Hard drive: create a virtual hard drive of type VDI, dynamically
+    allocated, 16 GB in size.
 \end{itemize}
 
 \subsection{Install Ubuntu on the virtual machine}
@@ -106,25 +103,38 @@ Boot and configure Ubuntu in the guest virtual machine.
 \item In the VirtualBox GUI, select the virtual machine and click
   Start. VirtualBox will start the virtual machine. You will see the
   Ubuntu boot message. Ignore any error messages.
-\item If all goes well, you will see a panel in the virtual machine
-  giving you a choice of language. Pick English for now so that other
-  people can help you. (You can later create another virtual machine
-  in your preferred language.) Pick Install Ubuntu.
+\item You may be prompted to pick a language. Choose English for now so
+  that other people can help you. Later you can switch to your favorite
+  language.
+\item Select Install Ubuntu.
 \item Preparing to install Ubuntu. Don't select Download updates while
-  installing (unless you have a lot Internet bandwidth.) Select
+  installing (unless you have a lot Internet bandwidth). Select
   Install third-party software. Select Continue.
 \item Installation Type. Select Erase disk and install Ubuntu. You are
-  erasing the virtual disk, not your host system disk. Continue.
+  erasing the virtual disk you created when you made the guest machine,
+  not your host system disk. Continue.
 \item Erase disk and install Ubuntu. Install Now.
 \item Where are you? Select New York; Continue. This sets the time zone
   for the virtual computer.
-\item Keyboard layout. Find you keyboard and select it. Continue.
+\item Keyboard layout. Find your keyboard and select it. You want the
+  keyboard that is on your physical system. Continue.
 \item Who are you? Enter your name, pick a user name, password. Select
   require password to log in. Do not encrypt your home folder. Continue.
-\item Watch the advertising.
+\item Watch the advertising. Don't move your mouse outside of the
+  virtual screen, in an attempt to avoid a bug in VirtualBox.
 \end{itemize}
 
-When the installation is finished, you will be told to remove the installation media
+When the installation is finished, click ``restart now.'' If the guest
+freezes, shut it down by clicking on the close button in your GUI and
+selecting ``power off machine.'' In the VirtualBox window, select the
+virtual machine and settings. Remove the virtual CD from the guest:
+Settings 	\textgreater Storage \textgreater select the virtual CD
+\textgreater select the icon for the
+virtual CD \textgreater click ``remove from virtual drive.'' Now restart the
+virtual machine.
+
+If the guest did not freeze,
+you will be told to remove the installation media
 (which is the virtual CD, the iso file) and press Enter. You can remove
 the virtual CD by right-clicking on the CD icon on the bottom panel of the 
 VirtualBox GUI panel. After the guest system reboots, shut it down. The Ubuntu shutdown
@@ -132,7 +142,7 @@ command is under the system menu in the upper right hand corner.
 
 \subsection{Hint on keyboard and mouse capture}
 
-VirtualBox tried to figuure out whether mouse movement and clicks and
+VirtualBox tried to figure out whether mouse movement and clicks and
 keyboard keystrokes should be sent to the host or to the guest.
 Sometimes it gets confused and the input focus gets stuck in
 the guest. When that happens, you need to tell the guest
@@ -144,13 +154,14 @@ virtual machine.
 
 Shut down the virtual machine if you have not already done so.
 
-You are in the VirtualBox GUI. Select the Ubuntu virtual machine and click settings.
-On the System tab, set the Base Memory to something higher than the default. I set it to the 
-max that is in the green area. That's because I tend to do most of my
-work in the guest OS, not the host OS, so I want the guest to have as
-much memory as possible. If you use your host system a lot, you will
-want to make your guest smaller than your host. Note that you can change
-this setting easily as your usage of your system changes.
+You are in the VirtualBox GUI. Select the Ubuntu virtual machine and
+click settings.  On the System tab, set the Base Memory to something
+higher than the default. I set it to the max that is in the green area.
+That's because I tend to do most of my work in the guest OS, not the
+host OS, so I want the guest to have as much memory as possible. If you
+use your host system a lot, you will want to make your guest smaller
+than your host. Note that you can change this setting easily as your
+usage of your system changes.
 
 In the Shared Folders tab, add a shared folder that is your home
 directory in the host system. Choose full access and auto-mount.
@@ -165,12 +176,17 @@ Additions. Click Run when asked if you trust the software. When the
 installation finished, press Return as instructed.
 
 Resize the window holding the display for the guest. The Ubuntu display
-should resize to fit the window. In the VirtualBox menus, pick View > Full Screen.
-Read the message and memorize the Host key. Then click Switch.
+should resize to fit the window. If it does not, shut down the virtual
+machine and restart it. 
 
-Mouse down to the bottom of the screen. You should see a tiny strip.
-THat's a menu bar that will pop up. Exit full-screen mode by picking the
-multiple-window icon.
+In the VirtualBox menus, pick View \textgreater Full Screen.  Read the
+message and memorize the Host key. Then click Switch.  Mouse down to the
+bottom of the screen. You should see a tiny strip.  That's a menu bar
+that will pop up. Exit full-screen mode by picking the multiple-window
+icon.
+
+Remove the guest additions virtual CD by using the VirtualBox Device
+menu.
 
 \subsection{Configure and install Ubuntu software}
 
@@ -181,40 +197,56 @@ Ubuntu software center in the left strip. Search for ``synaptic'' and
 select ``Synaptic Package Manager.'' Install it. Once it installs, exit
 the Ubuntu Sofware Center.
 
-Start synpatic by searching for it using the dash home. Use the Quick
-Filter to find emacs and mark it for installation. Likewise,
-vim. Choose Apply (under the check mark) to install all the software you
+Start synaptic by searching for it using the dash home. Ubuntu comes
+with \code{gedit}, an easy-to-use GUI-requiring text editor. You will want to use a
+text editor that does not require a GUI. Their are two equally good
+choices: emacs and vim. Emacs is easier to use for beginners and some
+say that vim is faster to use for experts. You should pick one and use
+it, as going back and forth is just too confusing. I recommend using
+tmux (to multiplex terminal sessions) and tmux is a bit more friendly to
+vim than emacs. So I use vim. But before switching to vim, I had happily
+used emacs for many years.
+
+Use the Quick Filter to find emacs or vim and mark it for installation.
+Choose Apply (under the check mark) to install all the software you
 picked. Synaptic will download the software and install it. Later, if
 the software gets updated, Synaptic will prompt you to install the
 updates.
 
-In the guest, select folder icon in the strip on the left. You should
+In the guest, select the folder icon in the strip on the left. You should
 see your home folder. Check the devices section of the panel. If it has
 a CD-ROM containing the Virtual Box Additions, click on the eject icon
 to its right.
 
-Now let's find the home folder in the host system. Reopen the file
-browser. Click on file system. Select the media folder. In it, you
-should see a folder whose name begins with ``fs\_''. This is your home
-folder in the host. It is visible in the guest. Double click on this
-folder to open it. If you don't have permission, you need to add your
-userid to the group ``vboxsf''. Do this by opening a terminal and
-executing
+Now let's gain access to your home folder in the host. Previously you
+configured your guest machine to have full access to your home folder.
+Now you need to give your Ubuntu user id permissio to access this
+folder. You do that by adding yourself to the vboxsf user group. (A user
+may be a member of many groups. Being a member of a group gives a user
+permission to read, write, and execute certain files.) To add yourself
+to the vboxsf group, open a terminal and execute:
 
 \begin{verbatim}
 $ sudo groupadd vboxsf
 $ sudo usermod -aG vboxsf <your user name>
 \end{verbatim}
 
-Log out and log back in. Now try to access the shared folder. This time,
-once you display your home directory in the host, move your mouse to the
-top line of the Ubuntu screen. This causes the menus to be displayed.
-Select Add bookmark.
+Don't worry if the first command fails.
 
-You should update the operating system
-software. Go to the system menu, select Updates available and follow the
-prompts. At the end of the update, you will need to reboot. Do so, then
-shut down the guest.
+
+Log out and log back in in order to active your membership in the new
+group. The icon in the upper right corner of the
+Ubuntu screen is a drop-down menu. One menu pick will log you out.
+
+Now let's access the home folder in the host system. Reopen the file
+browser. Click on file system. Select the media folder. In it, you
+should see a folder whose name begins with ``fs\_''. This is your home
+folder in the host. It is visible in the guest. Double click on this
+folder to open it. 
+
+You should update the operating system software. Go to the system menu,
+select Updates available and follow the prompts. At the end of the
+update, you will need to reboot. Do so, then shut down the guest.
 
 
 
@@ -227,10 +259,10 @@ free and runs on Linux, OS X, and Windows. Other virtual managers can be
 used. Search for virtualbox alternatives.
 
 I have found VirtualBox to be difficult to work with. It does not always behave
-consistently. Sometimes to get it to work, I have to restart VirtualBox and sometimes I
-have to restart my system. Once I misconfigured VirtualBox and its
+consistently. Sometimes to get it to work, I have to restart the guest,
+VirtualBox, and/or my host  system. Once I misconfigured VirtualBox and its
 locked up my Windows 7 system. If the GUI freezes, try not moving input
-focus away from the virtual machine's window.
+focus away from the virtual machine's window after you restart.
 
 The version of linux recommended is Ubuntu 12.04 because it is popular
 and torch is tested on it. Because it is popular, there is a lot of
@@ -241,8 +273,6 @@ Emacs and vim are suggested as installs because both are
 well-established free text editors that work in both a terminal and with
 a GUI. You should pick one and learn it.
 
-You now have Ubunt linux in a virtual box. You should shut it down so
-that VirtualBox saves everything.
 
 \subsection{Going further}
 
@@ -275,7 +305,7 @@ possible. That operating system should be a linux variant, as linux is
 most popular on compuatation servers.
 
 I configure my systems in one of two ways. When I order a system with a
-non-linux operating system, I typicall install VirtualBox and run a
+non-linux operating system, I typically install VirtualBox and run a
 Ubuntu guest. Sometimes I wipe out the vendor's operating system and
 install Ubuntu directly on the hardware. This is usually easier to do
 than configuring VirtualBox but does not make the original OS available.
@@ -283,6 +313,21 @@ Usually Ubuntu supports all the hardware in the system, but sometimes
 not. For that reason, I consider buying systems from vendors that offer
 Ubuntu. These vendors typically have up-to-date desktop systems but
 their laptop systems tend to lag behind in hardware features.   
+
+I move between systems regularly. For example, I have a desktop and
+laptop at home and a desktop at NYU. I use Dropbox to syncronize files
+among my systems. In Dropbox, I create a folder for each project. I
+consider a course to be a project. The Dropbox folder is in my home
+folder on each system. Sometimes I access the files for a project in the
+host OS, sometimes in the Ubuntu guess. I do all the programming work in
+Ubuntu.
+
+Dropbox doesn't work on NYU's servers. To keep source code synchronized,
+I use github as a central point and push and pull to my github account.
+I keep one github repository for each project I am working on. If data
+files are small and not changing frequently, I put them on github. If
+they are large or frequently changing, I use rsync to synchronize them
+among systems.
 
 \section{See also}
 
