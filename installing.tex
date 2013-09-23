@@ -25,8 +25,16 @@ versions.
 
 \subsection{Ubuntu 12.04}
 
-If you are using Ubuntu 12.04, open a new terminal and enter on one line
-(the line is broken up below so that it will print nicely)
+If you are using Ubuntu 12.04, open a new terminal and install the curl
+program. Enter your password when prompted.
+
+\begin{verbatim}
+$ sudo apt-get install curl
+\end{verbatim}
+
+Now install torch by entering the command below. The command should
+appear entirely on one line. The line is broken up below so that it will
+print nicely.
 
 \begin{verbatim}
 curl -s
@@ -65,8 +73,8 @@ tell bash that your preferred programs are in your
 \code{\textasciitilde/bin} directory. Do so by entering these commands:
 
 \begin{verbatim}
-$ echo 'source ~/.bashrc' >> .bash_profile
-$ echo PATH=$HOME/bin:$PATH >> .bashrc
+$ echo 'source ~/.bashrc' >> ~/.bash_profile
+$ echo PATH=$HOME/bin:$PATH >> ~/.bashrc
 $ source ~/.bash_profile
 $ which torch
 \end{verbatim}
@@ -85,11 +93,11 @@ t7> = 1 + 2 <ENTER>
 Torch should print \code{3}.
 
 Exit torch by entering c-D (hold down the control key and type the
-letter ``d'') and typing \code{y}.
+letter ``d'') and typing \code{y}, if prompted to do so.
 
 \subsection{OS X}
 
-\subsubsection{OS X 10.8.5}
+\subsubsection{OS X 10.8.5 Mountain Lion}
 
 Clement, the author of the one line installer,  uses a late release of OS X and is the author of the one-line
 installer. 
@@ -112,7 +120,14 @@ Now follow the directions for Ubuntu.
 
 
 
-\subsubsection{OS X 10.6.8}
+\subsubsection{OS X 10.6.8 Snow Leopard}
+
+
+You need to install Xcode 3.2.6 (not a 4.x.y version). Search
+\code{developer.apple.com} for Xcode 3.2.6. Download it and install.
+This download includes the command line tools.
+
+Now follow the directions for Ubuntu.
 
 The one-line installer does not work. I don't know of a work around.
 
@@ -145,29 +160,34 @@ installer puts files into \code{\textasciitilde/etc},
 \code{\textasciitilde/include}, \code{\textasciitilde/lib}, and
 \code{\textasciitilde/share}. For this reason, some people prefer to
 install torch locally into \code{\textasciitilde/local} so that these
-additional directories are not modified by the install. If you like that
+additional directories are not modified by the install.  If you like that
 choice, re-run the one-line install with
 \code{PREFIX=\textasciitilde/local} and adjust your \code{.bashrc} file.
+All the files are now installed in the \code{\textasciitilde/local}
+directory. In particulary, the torch executables are in
+\code{\textasciitilde/local/bin}.
 Don't forget to delete the torch executables in your
 \code{\textasciitilde/bin} directory.
 
 The solution installs torch as well as some libraries that torch can use
-and some torch packages. You may not want that. For example, you may
-have space restrictions on the device where you are installing torch. Or
-you may want to not use some of the libraries so that you can benchmark
-torch versus other technology that does not use those libraries. Or you
-may want to experiment with other libraries. How to
-install torch in a custom way can be found at
+and some torch packages. When you are a beginner, you definitely want
+that as the packages that are installed are frequently used and the
+non-torch libraries are used by torch to run fast. However,you may not
+want that. For example, you may have space restrictions on the device
+where you are installing torch. Or you may want to not use some of the
+libraries so that you can benchmark torch versus other technology that
+does not use those libraries. Or you may want to experiment with other
+libraries. How to install torch in a custom way can be found at
 \code{http://www.torch.ch/manual/install/index}. 
 
 The ``7'' in ``torch7'' refers to the version of
 torch. There was a version 5 that is very different from version 7.
 
-The PATH is a colon-separated list of directories where bash looks for
-an executable. The search stops in the first directory where the
-executable is found. If the executable is not in any of the directories,
-you will get an error message: \code{command not found}.
-\section{See also}
+The PATH is shell variable that is set to a colon-separated list of
+directories where bash looks for an executable. The search stops in the
+first directory where the executable is found. If the executable is not
+in any of the directories, you will get an error message: \code{command
+not found}.  \section{See also}
 
 This recipe is free documentation. You can modify it by visiting the
 github for account ``rlowrance'' and forking the repo
