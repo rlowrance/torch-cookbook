@@ -1,10 +1,10 @@
-all: getting-started.pdf installing-linux.pdf linux-in-a-box.pdf using-torch-on-hadoop.pdf
+all: getting-started.pdf installing-torch.pdf linux-in-a-box.pdf using-torch-on-hadoop.pdf
 
 getting-started.pdf: getting-started.tex
 	pdflatex getting-started.tex
 
 installing-torch.pdf: installing-torch.tex
-	pdflatex installing-linux.tex
+	pdflatex installing-torch.tex
 
 linux-in-a-box.pdf: linux-in-a-box.tex
 	pdflatex linux-in-a-box.tex
