@@ -274,6 +274,49 @@ well-established free text editors that work in both a terminal and with
 a GUI. You should pick one and learn it.
 
 
+\subsection{Mounting Dropbox in the guest's home director}
+
+The above directions cause your home folder in the host operating system
+to be mounted in \code{/media/}. You may prefer to have some of the
+folders in your home folder mounted elsewhere. For example, I use
+Dropbox to synchronize folders containing current projects. I have a
+bunch of scripts that depend on the Dropbox folder being in my home
+folder. These directions are specific to the Dropbox folder, but can be
+easily modified for any other folder.
+
+There are three steps in getting your Dropbox folder from the host to be
+mounted in your guest home directory.
+
+First, shut down the virtual machine and use the VirtualBox GUI to
+create a new shared folder. This time, share just the Dropbox folder in
+the host. The share name to use is \code{DropboxShared}. The share name
+cannot be the same as the folder name. Do not select read-only. Do not
+select auto mount. Do select make permanent.
+
+Second, boot your virtual machine and open a terminal. When Ubuntu
+boots, its reads the file \code{/etc/fstab} to mount (make accessible)
+certain file systems. You are going to modify this file so that the file
+system ``DropboxShared'' is mounted in the guest's home folder. The file
+\code{/etc/fstab} is protected so you need to become the super user
+(root) to edit it. If you are using vim, start vim with \code{sudo vim
+/etc/fstab}. If you are using emacs, start emacs with \code{sudo emacs
+/etc/fstab}. Add the two lines below to the end of the file and
+save it. Change ``roy'' to your own user id in the guest. The user id
+and group id are the id's assigned by Ubuntu to the first user and group
+created. If you use another linux, it may have assigned different ids. 
+The last two characters  in the second line are both digit zero.
+
+\begin{verbatim}
+# make the dropbox share from VirtualBox available in home
+DropboxShared /home/roy/Dropbox vboxsf uid=1000,gid=1000 0 0
+\end{verbatim}
+
+Third, reboot your virtual machine. If all goes well, you can navigate
+to your home folder in the virtual machine and see your Dropbox folder.
+If you have messed up the edit to \code{/etc/fstab} you will get a
+error message when Ubuntu boots. Choose ``S'' to skip mounting, then
+re-edit \code{/etc/fstab}.
+
 \subsection{Going further}
 
 The \code{tmux} program lets you run multiple terminal sessions inside
@@ -284,10 +327,10 @@ laptop.
 If you have two folders of data files you need to keep in sync--say one
 on a server and one on your laptop--\code{rsync} will prove useful.
 
-If you have two folders of program code you need to keep in sync or if
-you want to be able to go back to an earlier version of a program you
-are developing or if you want to share code development with team
-members, learn about \code{git} and GitHub. 
+A popular tool for sharing code and providing a way to fall back to a
+previous version of a program is \code{git}. GitHub.com lets you coordinate
+development tasks with others and will provide a way to share your code
+across systems: say your laptop and servers you use.
 
 In Ubuntu, you can hide the icons on the left to gain more screen space.
 You can use the alt key or Windows key to bring up a panel where you can
@@ -295,7 +338,7 @@ search for programs and files. You can add indicators to the top line of
 the window including one that monitors CPU usage and memory usage.
 
 In VirtualBox, you can configure a guest to use as many CPUs as are in
-the host system.
+the host system. You can also add more memory to the virtual system.
 
 
 \subsection{Configuring systems}
@@ -315,7 +358,7 @@ Ubuntu. These vendors typically have up-to-date desktop systems but
 their laptop systems tend to lag behind in hardware features.   
 
 I move between systems regularly. For example, I have a desktop and
-laptop at home and a desktop at NYU. I use Dropbox to syncronize files
+laptop at home and a desktop at NYU. I use Dropbox to synchronize files
 among my systems. In Dropbox, I create a folder for each project. I
 consider a course to be a project. The Dropbox folder is in my home
 folder on each system. Sometimes I access the files for a project in the
