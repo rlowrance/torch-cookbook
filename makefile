@@ -10,11 +10,11 @@ linux-in-a-box.pdf: linux-in-a-box.tex
 	pdflatex linux-in-a-box.tex
 
 using-torch-on-hadoop.pdf : using-torch-on-hadoop.tex \
- code/using-torch-on-hadoop/courant-abel-prize-winners \
- code/using-torch-on-hadoop/countInput-map.lua \
- code/using-torch-on-hadoop/countInput-reduce.lua \
- code/using-torch-on-hadoop/getKeyValue.lua \
- code/using-torch-on-hadoop/countInput-run.sh
+	using-torch-on-hadoop-assets/courant-abel-prize-winners.txt \
+ using-torch-on-hadoop-assets/countInput-map.lua \
+ using-torch-on-hadoop-assets/countInput-reduce.lua \
+ using-torch-on-hadoop-assets/getKeyValue.lua \
+ using-torch-on-hadoop-assets/countInput-run.sh
 	pdflatex using-torch-on-hadoop.tex
 
 .PHONY: clean
