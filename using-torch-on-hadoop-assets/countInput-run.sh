@@ -3,26 +3,19 @@
 # then run
 #  ./countInput-run.sh
 
-# terminate after first line that fails
-set -e
+# 1: options to consider whilst debugging
+#set -e     # stop at first non-zero return code
+#set -x     # print each command before executing it
 
-# print each command before executing it
-set -x
-
-# set control variables
-INPUT_FILE="parcels-HEATING.CODE-known-val.pairs"
+# 2: set control variables
 INPUT_FILE="courant-abel-prize-winners.txt"
 JOB_NAME="countInput"
-HPC_ID="rel292"
-
-# build other variables
 USER_DIR="/user/$USER"
-SRC="$HOME/using-torch-on-hadoop-assets"
 SRC=$PWD
 MAPPER="${SRC}/${JOB_NAME}-map.lua"
 REDUCER="${SRC}/${JOB_NAME}-reduce.lua"
 
-# input and output
+# 3: input and output
 # NOTES: $INPUT_FILE/$JOB_NAME as the output directory does not work because
 # there is already a file $INPUT_FILE and there cannot be a directory with 
 # the same name
@@ -30,18 +23,11 @@ INPUT_PATH=$USER_DIR/$INPUT_FILE
 OUTPUT_DIR=$INPUT_FILE.$JOB_NAME
 LOCAL_OUTPUT_DIR=$HOME/map-reduce-output/$OUTPUT_DIR
 
-# system default streaming jar
+# 4: system default streaming jar
 HADOOP_HOME=/usr/lib/hadoop
 STREAMING="hadoop-streaming-1.0.3.16.jar"
 
-# use version 1.1.2, not default 1.0.3
-# also set $HADOOP_HOME
-#module load hadoop/1.1.2
-#echo HADOOP_HOME=$HADOOP_HOME
-#which hadoop
-#STREAMING="hadoop-streaming-1.1.2.jar"
-
-# copy test file to the hadoop file system if it is not already there
+# 5: copy test file to the hadoop file system if it is not already there
 hadoop fs -test -e $INPUT_FILE
 echo rc from test of input file=$?
 if [ $? -ne 0 ]
@@ -53,14 +39,12 @@ else
 fi
 
 
-# delete output from previous run if it exists
-# NOTE: these command must be commented out when the script is first run, as
-# the delete command fails if the directory does not exist
-# and the mkdir fails if the directory already exists
+# 6: delete output directory from previous run if it exists
 echo about to test directory $OUTPUT_DIR
+hadoop fs -ls
 hadoop fs -test -e $OUTPUT_DIR
 echo rc from test of output dir=$?
-if [ $? -eq 0 ]
+if [ $? -eq 0 ]  
 then
   echo deleting output directory: $OUTPUT_DIR
   hadoop fs -rmr $OUTPUT_DIR
@@ -68,13 +52,7 @@ else
   echo output directory not in the hadoop file system
 fi
 
-# create output directory
-#echo creating output directory $OUTPUT_DIR
-#hadoop fs -mkdir ${OUTPUT_DIR}
-
-# run the streaming job; it will create the output directory
-echo
-echo
+# 7: run the streaming job; it will create the output directory
 echo creating output dirctory using streaming interface
 echo mapper=$MAPPER
 echo reducer=$REDUCER
@@ -87,7 +65,7 @@ hadoop jar $HADOOP_HOME/contrib/streaming/$STREAMING \
  -input $INPUT_PATH \
  -output $OUTPUT_DIR
 
-# copy output file to home directory
+# 8: copy output file to home directory
 FROM=$USER/$OUTPUT_DIR
 FROM=$OUTPUT_DIR
 TO=$HOME/map-reduce-output/$OUTPUT_DIR
@@ -101,10 +79,10 @@ fi
 mkdir -p $TO  # copyToLocal wants the directory to already exist
 hadoop fs -copyToLocal $FROM $HOME/map-reduce-output/
 
-# list output dir
+# 9: list output dir
 echo OUTPUT DIRECTORY
 ls $TO
 
-# print main output file
+# 10: print main output file
 echo FIRST OUTPUT FILE part-00000
 cat $TO/part-00000
