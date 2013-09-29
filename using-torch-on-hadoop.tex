@@ -163,25 +163,26 @@ into a key and value.
 
 Here is the source code for the \code{countInput-map command}.
 
-\verbatiminput{code/using-torch-on-hadoop/countInput-map.lua}
+\verbatiminput{using-torch-on-hadoop-assets/countInput-map.lua}
 
 
 Here is the source code for the \code{countInput-reduce command}.
 
-\verbatiminput{code/using-torch-on-hadoop/countInput-reduce.lua}
+\verbatiminput{using-torch-on-hadoop-assets/countInput-reduce.lua}
 
 
 Here is the source code for the \code{getKeyValue} function.
 
-\verbatiminput{code/using-torch-on-hadoop/getKeyValue.lua}
+\verbatiminput{using-torch-on-hadoop-assets/getKeyValue.lua}
 
 \subsection{Run your map-reduce job}
 
 The job is run by the \code{countInput-run.sh} shell script below. It is
-a bit complex and is described just after the listing. You run the
-script by first changing to the directory where your lua source code is
-and then running the command. In my setup, all the code is in one
-directory: both the lua scripts and shell scripts, so I 
+a bit complex and is described just after the listing. I wrote it with
+more comments than you may need, just in case you are a beginner. You
+run the script by first changing to the directory where your lua source
+code is and then running the command. In my setup, all the code is in
+one directory: both the lua scripts and shell scripts, so I 
 
 \begin{verbatim}
 $ cd <source code directory>
@@ -191,46 +192,32 @@ $ ./countInput-run.sh
 You will need to make the shell script executable be executing the
 command \code{\$ chmod +x countInput-run.sh}.
 
-\verbatiminput{code/using-torch-on-hadoop/countInput-run.lua}
+\verbatiminput{/using-torch-on-hadoop-assets/countInput-run.lua}
 
-Near the top of the shell script, we set two variables to hold the name
-of the input file and the name of the job. To make it easier to keep
-track of things, we use these conventions.
-\begin{itemize}
-  \item The output of the map-reduce job is written to the Hadoop file
-    system directory formed by concatenating the input file name, a dot,
-    and the job name. The bash variable \code{OUTPUT\_DIR} is set
-    accordingly.
-  \item The name of the command for the mapper is formed by
-    concatenating the job name with the string \code{-map.lua}.
-    Likewise, the name of the reducer command is \code{-reduce.lua}.
-    These names are in the bash variables \code{MAPPER} and
-    \code{REDUCER}.
-\end{itemize}
+Here is a description of the shell script.
+\begin{enumerate}
+\item While debugging, I found these options useful.
+\item Set up the name of the input file and the job name. The command
+names are based on the job name.
+\item Locate the input file and output directory.
+\item Locate the hadoop streaming executable.
+\item The input file must be in the Hadoop file system. If its not
+there, copy it from the local file system.
+\item The output directory cannot exist when the streaming job is
+started. Delete it if it exists.
+\item Run the streaming job. The lua source files need to be moved to
+the Hadoop execution nodes my naming them in the \code{-file} option.
+It's easiest to move all of the lua source code instead of just the
+source code files used.
+\item The streaming job write to a directory in the Hadoop file system.
+It's easier to examine output in the local file system, so the script
+copies the streaming output directory to the local file system. 
+\item I'm eager to find out what happened, so I list the local output
+directroy.
+\item I know the result will be in a specific file in the output
+directory, so I print that file.
+\end{enumerate}
 
-One quirk of the streaming interface is that it insists that the output
-directory does not exist when the job is launched. Hence the directory
-is deleted. Note that one cannot delete a non-existent directory in the
-Hadoop file system, so that the script as written will fail the first
-time it is run. The workaround is to comment out the \code{hadoop fs
--rmr} command on the initial run.
-
-Next Hadoop is launched with the streaming interface. The option
-\code{file} is set so that every \code{lua} script in the current
-directory is copied to every execution node. Its necessary to copy only
-the source code files actually used, but copying everything removes the
-chance for an error and doesn't take much time.
-
-\subsection{Copy output directory to local file system}
-
-When the Hadoop streaming job finishes, the script copies its output
-directory from the Hadoop file system to the local file system. Hadoop
-will not copy to a local directory that already exists, so the local
-directory is deleted if it exists. In the local file system, the output
-directories are all subdirectories of \code{\$HOME/map-reduce-output}.
-The copying is done because its easier
-to work with files in the local file system than files in the Hadoop
-file system.
 
 The output directory will contain a \code{\_SUCCESS} or \code{\_FAILURE}
 file that acts as a signal for the success of the map-reduce job. If the
