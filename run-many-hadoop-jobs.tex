@@ -1,0 +1,78 @@
+% vim: set textwidth=72 :
+% Copyright (C) 2013 Roy E Lowrance
+% See the file COPYING.txt for copying conditions.
+
+\documentclass{article}
+\usepackage{amssymb,latexsym,amsmath}
+\usepackage{verbatim}
+\let\code\texttt % in line source code
+
+\begin{document}
+\title{Title}
+\author{Roy E Lowrance}
+\maketitle
+
+%\abstract{XXX}
+
+\section{Problem}
+
+You want to run many Hadoop jobs without writing a long script for each.
+
+\section{Solution}
+
+Use the script \code{map-reduce.sh} which is invoked this way:
+
+\begin{verbatim}
+$ ./map-reduce.sh INPUT JOB [READLIMIT]
+\end{verbatim}
+
+where
+\begin{itemize}
+  \item INPUT is the path to the input file in the Hadoop file system
+  \item JOB is the name of the map-reduce job. The mapper is
+    \code{JOB-map.lua}.  The reducer is \code{JOB-reduce.lua}
+  \item READLIMIT is ignored. It is provided for compatiblity with the 
+    \code{map-reduce-local.sh} script which is described in the recipe ``I
+    want to test my Hadoop program.''
+\end{itemize}
+
+The \code{map-reduce.sh} script will run your job and copy the job's
+output directory to the local file system in directory
+\code{\$HOME/map-reduce-output/}. You can change this directory by
+editing the script.
+
+I like to display at least the first portion of the output file. I do
+this by writing another script \code{go.sh} which runs \code{map-reduce.sh} then
+prints the first output file.
+
+\section{Discussion}
+
+The script \code{map-reduce.sh} is just below. It is a modification of
+the script presented in ``Using Torch on Hadoop.'' Refer to that recipe
+for documentation.
+
+\verbatiminput{run-many-hadoop-jobs-assets/map-reduce.sh}
+
+The script \code{go.sh} is just below. Modify it so that it uses your
+INPUT and JOB and prints what is relevant to your work.
+
+
+\verbatiminput{run-many-hadoop-jobs-assets/go.sh}
+
+
+
+\section{See also}
+
+Other relevant recipes include
+\begin{itemize}
+  \item ``Using Torch on Hadoop''
+  \item ``I want to test my Hadoop program''
+\end{itemize}
+
+This recipe is free documentation. You can modify it by visiting
+github for account ``rlowrance'' and forking the repo
+``torch-cookbook.''
+
+\end{document}
+
+
