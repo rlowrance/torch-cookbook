@@ -4,13 +4,30 @@
 --   (keyname --> count)
 -- stdout format:
 --   (keyname --> sum of counts for that keyname)
+--
+-- COMMAND LINE ARGUMENTS
+-- READLIMIT optional integer default -1
+--           if >= 0, read only READLIMIT input records
 
 require "getKeyValue"
+
+local readlimit = -1
+if arg[1] ~= nil then
+    readlimit = tonumber(arg[1])
+end
+
+print('# readlimit \t' .. tostring(readlimit))
 
 local records = 0
 local keyBytes = 0
 local valueBytes = 0
+local nRead = 0
 for line in io.stdin:lines("*l") do
+    nRead = nRead + 1
+    if readlimit >= 0 and nRead > readlimit then
+        break
+    end
+    
     if line == nil then break end
     records = records + 1
     local key, value = getKeyValue(line)
