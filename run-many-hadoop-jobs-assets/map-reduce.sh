@@ -11,28 +11,29 @@
 # JOB       is the name of your map reduce job. The mapper command is
 #             JOB-map.lua is the mapper command
 #             JOB-reduce.lua is the reducer command
-# USERID    not sure if this is needed. Try to eliminate it
 # READLIMIT for compatibility with your local map-reduce job runner.
 # 
 # The script copies the output of the job from the Hadoop file system
 # to $HOME/map-reduce-output
 
-# capture command line arguments
+set -x  # print each command before executing it
+
+# 1: capture command line arguments
 INPUT=$1
 JOB=$2
-USERID=$3  # NOT NEEDED
-READLIMIT=$4  # NOT USED
+READLIMIT=$3  # NOT USED
 
-# input and output paths
+# 2: input and output paths
 INPUT_PATH=/home/$USER/$INPUT
 OUTPUT_DIR_HADOOP=$INPUT.$JOB
-OUTPUT_DIR_LOCAL=$HOME/map-reduce-output/$OUTPUT_DIR
+MAP_REDUCE_OUTPUT=map-reduce-output
+OUTPUT_DIR_LOCAL=$HOME/$MAP_REDUCE_OUTPUT/$OUTPUT_DIR_HADOOP
 
-# where Hadoop lives
+# 3: where Hadoop lives
 HADOOP_HOME=/usr/lib/hadoop
 STREAMING="hadoop-streaming-1.0.3.16.jar"
 
-# 5: copy test file to the hadoop file system if it is not already there
+# 4: copy test file to the hadoop file system if it is not already there
 hadoop fs -test -e $INPUT
 if [ $? -ne 0 ]
 then
@@ -43,7 +44,7 @@ else
 fi
 
 
-# 6: delete output directory from previous run if it exists
+# 5: delete output directory from previous run if it exists
 hadoop fs -test -e $OUTPUT_DIR_HADOOP
 if [ $? -eq 0 ]  
 then
@@ -53,7 +54,7 @@ else
   echo output directory not in the hadoop file system
 fi
 
-# 7: run the streaming job; it will create the output directory
+# 6: run the streaming job; it will create the output directory
 echo starting hadoop streaming job
 hadoop jar $HADOOP_HOME/contrib/streaming/$STREAMING \
  -file *.lua \
@@ -61,24 +62,26 @@ hadoop jar $HADOOP_HOME/contrib/streaming/$STREAMING \
  -reducer $PWD/$JOB-reduce.lua \
  -input $INPUT \
  -output $OUTPUT_DIR_HADOOP
+echo finished hadoop job
 
-# 8: copy output file to home directory
+# 7: copy output file to home directory
 # delete output directory if it already exists
 # We delete in case it has old content that is not overwritten by copyToLocal
+echo output dir local=$OUTPUT_DIR_LOCAL
+echo output dir hadoop=$OUTPUT_DIR_HADOOP
 if [ -a $OUTPUT_DIR_LOCAL ]
 then
   # local output directory exists, so delete it
-  cd $OUTPUT_DIR_LOCAL; rm -rf -- $OUTPUT_DIR_LOCAL
+  # run in subshell so cd has only temporary effect
+  (cd $OUTPUT_DIR_LOCAL; rm -rf -- $OUTPUT_DIR_LOCAL)
 fi
 
-mkdir -p $OUTPUT_DIR_COPY  # copyToLocal wants the directory to already exist
-hadoop fs -copyToLocal $OUTPUT_DIR_HADOOP $OUTPUT_DIR_LOCAL
+mkdir -p $OUTPUT_DIR_LOCAL  # copyToLocal wants the directory to already exist
+echo about to copy to local from $OUTPUT_DIR_HADOOP
+hadoop fs -copyToLocal $OUTPUT_DIR_HADOOP $HOME/$MAP_REDUCE_OUTPUT/
+#hadoop fs -copyToLocal courant-abel-prize-winners.txt.countInput /home/rel292/map-reduce-output/
 
-# 9: list output dir
+# 8: list output dir
 echo LOCAL OUTPUT DIRECTORY
 ls $OUTPUT_DIR_LOCAL
-
-# 10: print main output file
-#echo FIRST OUTPUT FILE part-00000
-#cat $TO/part-00000
 
