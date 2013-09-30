@@ -1,0 +1,73 @@
+% vim: set textwidth=72 :
+% Copyright (C) 2013 Roy E Lowrance
+% See the file COPYING.txt for copying conditions.
+
+\documentclass{article}
+\usepackage{amssymb,latexsym,amsmath}
+\usepackage{verbatim}
+\let\code\texttt % in line source code
+
+\begin{document}
+\title{Title}
+\author{Roy E Lowrance}
+\maketitle
+
+%\abstract{XXX}
+
+\section{Problem}
+
+You want to test your map-reduce job before you submit it to Hadoop, perhaps because the 
+debugging tools in the Hadoop streaming interface are lacking.
+
+\section{Solution}
+
+The solution has two parts:
+\begin{itemize}
+  \item Write the mapper so that it can process less than all the input.
+    You may be using Hadoop because your input files are large or
+    because there is a lot of work to do for each input record.
+  \item In the mapper, write debugging information into the key-value
+    file by using designated keys for that purpose. Modify the reduce to
+    handle these keys appropriately.
+\end{itemize}
+
+\subsection{map a subset of the input}
+
+Write your map program so that it can run from the command line and as a
+Hadoop command. When it runs from the command line, you may need to
+limit the amount of input it reads, if it reads a lot of input or
+creates a lot of key-value pairs for your reduce job.
+
+To do this, write one map program that has an optional parameter. If the
+optional parameter is present, its value is used to limit the scope of
+the map program. One way to do this is to have let the optional
+parameter be READLIMIT, an integer with a default value of -1. If
+READLIMIT is non-negative, the map program stops after reading the
+indicated number of input records. If READLIMIT is negative, the map
+program reads and processes all the input records. (The READLIMIT idea
+is common in R for controlling how many records are read and processed
+from a file.)
+
+\subsection{put debugging information into the key-value pairs}
+
+The reduce will read all the key-value pairs after they have been
+combined and sorted by key. Designate one set of keys as only containing
+debugging information and have the reducer handle records with these
+keys specially. The keys and values are strings. One choice is to say
+that any key beginning with a ``#'' is for debugging work, not regular
+processing.
+
+
+\section{Discussion}
+
+XXX
+
+\section{See also}
+
+This recipe is free documentation. You can modify it by visiting
+github for account ``rlowrance'' and forking the repo
+``torch-cookbook.''
+
+\end{document}
+
+
