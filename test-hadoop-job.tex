@@ -24,10 +24,8 @@ debugging tools in the Hadoop streaming interface are lacking.
 The solution has two parts:
 \begin{itemize}
   \item Write the mapper so that it can process less than all the input.
-    You may be using Hadoop because your input files are large or
-    because there is a lot of work to do for each input record.
   \item In the mapper, write debugging information into the key-value
-    file by using designated keys for that purpose. Modify the reduce to
+    file by using  keys designated for that purpose. Modify the reducer to
     handle these keys appropriately.
 \end{itemize}
 
@@ -50,17 +48,48 @@ from a file.)
 
 \subsection{put debugging information into the key-value pairs}
 
-The reduce will read all the key-value pairs after they have been
+The reducer will read all the key-value pairs after they have been
 combined and sorted by key. Designate one set of keys as only containing
 debugging information and have the reducer handle records with these
 keys specially. The keys and values are strings. One choice is to say
-that any key beginning with a ``#'' is for debugging work, not regular
+that any key beginning with a ``\#'' is for debugging work, not regular
 processing.
 
 
 \section{Discussion}
 
-XXX
+The sample code is a modification of the code used for the recipe
+``Using Torch on Hadoop.''
+
+The mapper program is modified to accept the optional READLIMIT
+argument and to write diagnostic information to its output stream using
+keys that begin with ``\#''.
+
+\verbatiminput{test-hadoop-job-assets/countInput-map.lua}
+
+The reducer program looks for the diagnostic records and writes them to
+stderr. The output is written to stdout. In some uses, you may want to
+write the diagnostic output to stdout as well.
+
+\verbatiminput{test-hadoop-job-assets/countInput-reduce.lua}
+
+There are two shell scripts to run the tests. \code{go-map.sh} runs just
+the mapper. It executes the mapper program as a command.
+
+\verbatiminput{test-hadoop-job-assets/go-map.sh}
+
+The shell script \code{go-map-reduce.sh} runs the mapper and the
+reducer. The output of the mapper is piped to a sort command that sorts
+from the first column (\code{-k 1}) to the first white space (the tab
+character separating the key and value), and the pipes the sorted
+key-value pairs (possibly including the diagnostic information) to the
+reduce. The stdout from the reducer is saved and its stderr is printed.
+
+\verbatiminput{test-hadoop-job-assets/go-map-reduce.sh}
+
+Below is the input file \code{courant-abel-prize-winners.txt}.
+
+\verbatiminput{test-hadoop-job-assets/courant-abel-prize-winners.txt}
 
 \section{See also}
 
