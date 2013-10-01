@@ -1,3 +1,3 @@
 # run map-reduce locally
-./countInput-map.lua 2 < courant-abel-prize-winners.txt | sort -k 1 | ./countInput-reduce.lua > countInput-test-output
+./map-reduce-local.sh courant-abel-prize-winners.txt countInput 2
 
