@@ -16,30 +16,43 @@
 
 \section{Problem}
 
-You want to read more than stdin in either your mapper or reducer.
-
+You want to read more than stdin in either your mapper or reducer. We
+call these extra files the auxillary files. The auxillary files might
+contain tables needed by the mapper or reducer. One use case is when you
+are selecting which of several models to use and you need to estimate
+the generalization error for each of the models. In this case, the input
+file could be the test data and the auxillary file the training data.
 
 \section{Solution}
 
-The solution (IF IT WORKS) is simple: just open the files for reading
-and read the records. Attempting to write files other than stdout out is
-most likely unreliable, as there is no way to cordinate the output of
-the tasks.
+One supposed easy solution--just open the auxillary  files in the mapper
+and reducer and read them--doesn't work because the auxillary files will not
+be in the working directory of the mapper or reducer.
 
+Another supposed easy solution--specify multiple input files on the
+\code{-file} option when starting map-reduce--doesn't work because each
+mapper will see only a portion of the input file on its stdin. In this
+use case, you want each mapper to see all of the auxillary files.
+
+The solution is to ship the auxillary files to the working directory
+that is used by the mapper and reducer. The mapper and reducer then open
+the files using their file names and read them.
 
 \section{Discussion}
 
 The sample code is a modification of the code used for the recipe
 ``Using Torch on Hadoop.''
 
-The sample scripts in this section copy specific files to the
+The sample scripts in this section copy specific files to the working
+directory on the
 execution nodes. This is done to make things as clear as possible.
 However, you may want to copy an entire directory of files to the local
-system. That can be done by specifying a directory instead of a single
-file.
+system. Or you may want to copy only certain files in a directoy.
+That can be done by specifying a directory instead of a single
+file or by specifying a file glob as in \code{/logs/2013/09/*.log}.
 
-The mapper program is modified to read an auxillary table. To test that
-the read actully works, the records in the auxillary table are written
+The mapper program is modified to read an auxillary file. To test that
+the read actully works, the records in the auxillary file are written
 to the mappers stdout as comments, using our convention that a comment
 begins with a key starting with "\#".
 
@@ -47,7 +60,10 @@ begins with a key starting with "\#".
 
 The reducer program is also modified to read an auxillary file. The
 debugging records from the mapper and the records from the reducers's
-auxillary files are written to stderr.
+auxillary files are written to stderr. Note that writing to stderr in
+the reducer is OK for debugging when running in the local file system.
+However, when running under Hadoop, CHECK THIS the stderr is not
+available as an output of the map-reduce job.
 
 \verbatiminput{read-more-than-stdin-assets/countInput-reduce.lua}
 
@@ -60,7 +76,7 @@ system for the output file. The auxillary files are copied to the
 execution nodes.
 
 NOTE: WE SHOULD FIGURE OUT HOW TO VIEW THE STDERR OF THE REDUCE STEP
-WHEN THE MAP\_REDUCE JOB IS RUN ON THE HADOOP SYSTEM.
+WHEN THE MAP-REDUCE JOB IS RUN ON THE HADOOP SYSTEM.
 
 \verbatiminput{read-more-than-stdin-assets/map-reduce.sh}
 
@@ -76,7 +92,6 @@ To test on the local file system I wrote \code{go-map-reduce-local.sh}.
 The generic scripts to run on the local file system is here.
 
 \verbatiminput{read-more-than-stdin-assets/map-reduce-local.sh}
-OLD BELOW ME
 
 The shell script \code{map-reduce-local.sh} is just below. The only
 trick is that you need to define the output directory before running the
@@ -94,12 +109,15 @@ file and job and the READLIMIT.
 
 \verbatiminput{test-hadoop-job-assets/go-map-reduce.sh}
 
-
 Below is the input file \code{courant-abel-prize-winners.txt}.
 
 \verbatiminput{test-hadoop-job-assets/courant-abel-prize-winners.txt}
 
 \section{See also}
+
+Apache provides documentation on map-reduce at
+\code{wiki.apache.org/hadoop/HadoopStreaming}. An example of providing
+log files as auxillary input is provided.
 
 This recipe is free documentation. You can modify it by visiting
 github for account ``rlowrance'' and forking the repo
