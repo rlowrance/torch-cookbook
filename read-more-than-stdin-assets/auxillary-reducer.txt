@@ -1,0 +1,2 @@
+auxillary reducer record 1
+auxillary reducer record 2

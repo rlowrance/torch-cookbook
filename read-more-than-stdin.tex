@@ -1,0 +1,110 @@
+% vim: set textwidth=72 :
+% Copyright (C) 2013 Roy E Lowrance
+% See the file COPYING.txt for copying conditions.
+
+\documentclass{article}
+\usepackage{amssymb,latexsym,amsmath}
+\usepackage{verbatim}
+\let\code\texttt % in line source code
+
+\begin{document}
+\title{Read Files Other Than Just stdin in Hadoop}
+\author{Roy E Lowrance}
+\maketitle
+
+%\abstract{XXX}
+
+\section{Problem}
+
+You want to read more than stdin in either your mapper or reducer.
+
+
+\section{Solution}
+
+The solution (IF IT WORKS) is simple: just open the files for reading
+and read the records. Attempting to write files other than stdout out is
+most likely unreliable, as there is no way to cordinate the output of
+the tasks.
+
+
+\section{Discussion}
+
+The sample code is a modification of the code used for the recipe
+``Using Torch on Hadoop.''
+
+The sample scripts in this section copy specific files to the
+execution nodes. This is done to make things as clear as possible.
+However, you may want to copy an entire directory of files to the local
+system. That can be done by specifying a directory instead of a single
+file.
+
+The mapper program is modified to read an auxillary table. To test that
+the read actully works, the records in the auxillary table are written
+to the mappers stdout as comments, using our convention that a comment
+begins with a key starting with "\#".
+
+\verbatiminput{read-more-than-stdin-assets/countInput-map.lua}
+
+The reducer program is also modified to read an auxillary file. The
+debugging records from the mapper and the records from the reducers's
+auxillary files are written to stderr.
+
+\verbatiminput{read-more-than-stdin-assets/countInput-reduce.lua}
+
+The shell script \code{map-reduce.sh} is
+just below. It runs a map reduce job on hadoop. The arguments to the
+script are the input file name in the Hadoop file system, the job name,
+the name of the auxillary input file in the local file system for the
+map command, the name of the auxillary input file in the local file
+system for the output file. The auxillary files are copied to the
+execution nodes.
+
+NOTE: WE SHOULD FIGURE OUT HOW TO VIEW THE STDERR OF THE REDUCE STEP
+WHEN THE MAP\_REDUCE JOB IS RUN ON THE HADOOP SYSTEM.
+
+\verbatiminput{read-more-than-stdin-assets/map-reduce.sh}
+
+For ease of testing, I wrote two scripts. \code{go-map-reduce-hadoop.sh}
+run the test on Hadoop. Here it is.
+
+\verbatiminput{read-more-than-stdin-assets/go-map-reduce.sh}
+
+To test on the local file system I wrote \code{go-map-reduce-local.sh}.
+
+\verbatiminput{read-more-than-stdin-assets/go-map-reduce-local.sh}
+
+The generic scripts to run on the local file system is here.
+
+\verbatiminput{read-more-than-stdin-assets/map-reduce-local.sh}
+OLD BELOW ME
+
+The shell script \code{map-reduce-local.sh} is just below. The only
+trick is that you need to define the output directory before running the
+script.
+
+\verbatiminput{test-hadoop-job-assets/map-reduce-local.sh}
+
+The script \code{go-map.sh} runs just
+the mapper. It executes the mapper program as a command.
+
+\verbatiminput{test-hadoop-job-assets/go-map.sh}
+
+The shell script \code{go-map-reduce.sh} knowns the names of the input
+file and job and the READLIMIT.
+
+\verbatiminput{test-hadoop-job-assets/go-map-reduce.sh}
+
+
+Below is the input file \code{courant-abel-prize-winners.txt}.
+
+\verbatiminput{test-hadoop-job-assets/courant-abel-prize-winners.txt}
+
+\section{See also}
+
+This recipe is free documentation. You can modify it by visiting
+github for account ``rlowrance'' and forking the repo
+``torch-cookbook.''
+
+\end{document}
+
+

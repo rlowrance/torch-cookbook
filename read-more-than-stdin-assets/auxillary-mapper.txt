@@ -1,0 +1,2 @@
+auxillary mapper record 1
+auxillary mapper record 2
