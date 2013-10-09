@@ -5,8 +5,8 @@
 #  ./countInput-run.sh
 
 # 1: options to consider whilst debugging
-#set -e     # stop at first non-zero return code
-#set -x     # print each command before executing it
+set -e     # stop at first non-zero return code
+set -x     # print each command before executing it
 
 # 2: set control variables
 INPUT_FILE="courant-abel-prize-winners.txt"
@@ -58,7 +58,7 @@ echo input path=$INPUT_PATH
 echo output dir=$OUTPUT_DIR
 hadoop jar $HADOOP_HOME/contrib/streaming/$STREAMING \
  -file *.lua \
- -mapper $MAPPER \
+ -mapper "$MAPPER  abc" \
  -reducer $REDUCER \
  -input $INPUT_PATH \
  -output $OUTPUT_DIR

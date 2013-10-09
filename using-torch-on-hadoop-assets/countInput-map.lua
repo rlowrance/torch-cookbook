@@ -7,9 +7,15 @@
 
 require "getKeyValue"
 
-local records = 0
+-- verify that we can read a command line argument
+if arg[1] == nil then
+    print("mapper has no command line argument")
+    os.exit(0)
+end
+    
 local keyBytes = 0
 local valueBytes = 0
+local records = 0
 for line in io.stdin:lines("*l") do
     if line == nil then break end
     records = records + 1
