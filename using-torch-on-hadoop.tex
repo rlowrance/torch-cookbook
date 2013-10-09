@@ -31,10 +31,11 @@ University.}
   \item Get your data and torch scripts onto babar, the Hadoop cluster.
   \item Make sure a suitable instance of torch is available on babar,
     the Hadoop cluster.
-  \item Break your map-reduce job into two torch programs. One will be
-    the map command, the other the reduce command. A \emph{command} is a
-    program that receives no torch arguments (command line
-    options). 
+  \item Write two command that will form your map-reduce job. A
+      \emph{command} is a string of characters that you could type and
+      have the bash shell execute. A command is the name of a program to
+      run followed by zero or more options. A lot of the art in using
+      map-reduce is to decompose your job into these two commands.
   \item Use the streaming interface to submit a map-reduce job. The job
     will read a single file in the Hadoop file system. It will create a
     directory of files in the Hadoop file system.
@@ -72,10 +73,11 @@ the file \code{courant-abel-prize-winners.txt} which lists faculty of the
 Courant Institute who won the Abel Prize. Each row contains the year of
 the award, a tab character, and the name of the winner. Here's the file:
 
-\verbatiminput{using-torch-on-hadoop-assets/courant-able-prize-winners.txt}
+\verbatiminput{using-torch-on-hadoop-assets/courant-abel-prize-winners.txt}
 
 If you are using your own data and code, I recommend moving the data to
-babar using \code{rsync} and your code to babar using \code{github}.
+babar using \code{rsync} and your code to babar using \code{github} and 
+\code{git}.
 
 \subsection{Making a torch executable available}
 
@@ -89,10 +91,12 @@ Zhang's torch install was available at \code{/home/xz558/.usr/bin}. Note
 the dot before the \code{usr} directory. Xiang's torch install was up to
 date when this note was written.
 
-Be careful of the installed torch executables already on babar. At one time,
-\code{dumbo}, an alternative Hadoop login node, had an installed version
-of torch, but it was old and had bugs that had been fixed in subsequent
-releases.
+Be careful of the installed torch executables that may already
+be on babar. They may have been built with different choices than the
+torch you normally use and hence your torch program may run differently;
+debugging streaming jobs on Hadoop is difficult enought with this
+additional layer of complexity.
+
 
 To find out which torch executable you have, enter \code{\$ which torch} in
 a terminal. If you have installed torch and the \code{which} command
@@ -105,16 +109,18 @@ command in a terminal: \code{\$ source .bash\_profile}.
 \subsection{Create the map-reduce commands}
 
 Create two commands that will form your map-reduce job. Each command is
-a torch source file that starts with a shebang {an exclamation mark).
-The source file is invoked by the Hadoop run-time with no parameters,
-so it may not depend on command line arguments.
+the name of a torch source file followed by zero or more options. The
+options are read by the source file when it is executed. The source file
+should start
+with a shebang {an exclamation mark).
 
 The map command reads stdin, which will be a file in the Hadoop file
 system. It writes to stdout a series of records. Each record is
 comprised of a key and a value separated by a tab character. Hadoop 
 may run multiple instances of your map command. In fact, you hope that
 it does, because that's where the speed up comes from. Each instance 
-will produce a separate stdout key-value file.
+will read a unique portion of the input file and will
+produce a separate stdout key-value file.
 
 Since you are using the streaming interface, you cannot specify a
 combiner. 
@@ -143,25 +149,42 @@ the Hadoop file system. The file names have the form \code{part-NNNNN}.
 The sample job \code{countInput} is a variant on the Unix program
 \code{wc}. It reads a file in the Hadoop file system and produces a
 directory
-in the Hadoop file system. The \code{part-NNNNN} files contain the number of records in the
+in the Hadoop file system. 
+
+The input file is a text file. Each record may be split into a key
+portion followed by a value portion. If there is a tab character in the
+record, all the characters before the first tab character form the key
+and all the characters after it form the value.
+
+If the map-reduce job is successful, the output directory contains
+\code{part-NNNNN} files which contain the number of records in the
 input, the number of bytes in keys in the input, and the number of byte
 in values in the input. Keys and values in the input file are separated
-by tab characters. If there is no tab character in an input record, the
-entire record is treated as a key. To fully mimic the unix \code{wc}
-command, the part files should be combined in some way, but that is not
-done here.
+by tab characters. There will be one output file for each reducer that
+is run. The test data for the sample program is small enough so that
+there is only one such file. If more data were used as input, there
+would be multiple output files that would need to be combined.
+
 
 The job requires two commands, which I put into two torch files:\\
 \code{countInput-map.lua} and \code{countInput-reduce.lua}. Each file
 must begin with a shebang line to invoke the torch interpreter. The
 correct interpret to use is \code{torch-lua} as, when invoked in this
-way, it does not print a greeting to stdout. If the greeting were
-printed, it would appear in your output file.
+way, prints its greating messages to stderr, which is discarded by the
+map-reduce framework. If the greeting were printed to stdout, it would
+appear in your output file. (Note; It may be possible to invoke the
+torch programs via a command such as \code{torch countInput-map.lua},
+but I haven't tested this.)
 
 The map program \code{countInput-map.lua} reads records from stdin. It
 attempts to break each record into a key and value. It counts the number
 of records, the number of bytes in keys, and the number of bytes in
-values.
+values. In order to demonstrate that command options can be read, the
+program checks for the presence of one option.
+
+TODO: Determine if the torch library command to parse the command line
+can be used. The capability of using the library is critical to
+effective use of Hadoop.
 
 The map and reduce programs share a function that splits an input record
 into a key and value.
@@ -170,17 +193,27 @@ Here is the source code for \code{countInput-map.lua}.
 
 \verbatiminput{using-torch-on-hadoop-assets/countInput-map.lua}
 
+The reduce program \code{countInput-reduce.lua} reads key-value pairs
+from stdin, This time the key is the name of the feature being counted
+and the value is the number of times the was seen. The input file is
+sorted by key, so the program keeps a running total and prints it when
+the feature changes.
 
 Here is the source code for \code{countInput-reduce.lua}.
 
 \verbatiminput{using-torch-on-hadoop-assets/countInput-reduce.lua}
 
+The shared function \code{getKeyValue} splits a string around the first
+tab value in the string.
 
 Here is the source code for the \code{getKeyValue.lua}.
 
 \verbatiminput{using-torch-on-hadoop-assets/getKeyValue.lua}
 
 \subsection{Run your map-reduce job}
+
+TODO: Convert to a torch script instead of a shell script. Then students
+don't have to learn the complicated shell language.
 
 The job is run by the \code{countInput-run.sh} shell script below. It is
 a bit complex and is described just after the listing. I wrote it with
